@@ -42,3 +42,4 @@ env/
 *.swp
 *.swo
 .DS_Store 
+server/calendar_data.json 
