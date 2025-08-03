@@ -1,135 +1,188 @@
-# Calendar Handler Setup Guide
+# Calendar Handler Documentation
 
-## Initial Setup
+## Overview
 
-### 1. Virtual Environment Setup
-```bash
-# Navigate to the server directory
-cd server
+The `CalendarHandler` class provides a comprehensive interface for Google Calendar operations including:
+- OAuth 2.0 authentication
+- Event management (create, read, update, delete)
+- Calendar operations
+- Availability checking
+- Free/busy information
 
-# Create a new virtual environment
-python3 -m venv venv
-
-# Activate the virtual environment
-# On macOS/Linux:
-source venv/bin/activate
-# On Windows:
-venv\Scripts\activate
-
-# Verify activation (should show virtual environment path)
-which python
-```
-
-### 2. Install Dependencies
-```bash
-# Make sure your virtual environment is activated
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-### 3. Google Calendar API Setup
-
-1. **Create Google Cloud Project**:
-   - Go to [Google Cloud Console](https://console.cloud.google.com/)
-   - Create a new project or select an existing one
-   - Note down your Project ID
-
-2. **Enable Google Calendar API**:
-   - In Google Cloud Console, go to "APIs & Services" > "Library"
-   - Search for "Google Calendar API"
-   - Click "Enable"
-
-3. **Configure OAuth Consent Screen**:
-   - Go to "APIs & Services" > "OAuth consent screen"
-   - Choose "External" user type
-   - Fill in required information:
-     - App name
-     - User support email
-     - Developer contact email
-   - Add scopes:
-     - `./auth/calendar.readonly`
-     - `./auth/calendar.events`
-     - `./auth/calendar`
-   - Add test users (your Google email)
-
-4. **Create OAuth 2.0 Credentials**:
-   - Go to "APIs & Services" > "Credentials"
-   - Click "Create Credentials" > "OAuth client ID"
-   - Choose "Desktop application"
-   - Name your client
-   - Download the client configuration file
-   - Rename it to `credentials.json`
-   - Place it in the `server` directory
-
-## Usage Guide
+## Class Methods
 
 ### 1. Authentication
 
+#### `__init__(credentials_file: str = 'credentials.json', token_file: str = 'token.json')`
+Initialize the Calendar Handler with optional custom file paths.
 ```python
-from calendar_handler import CalendarHandler
-
-# Initialize handler
-handler = CalendarHandler()
-
-# Authenticate (will open browser for OAuth flow)
-handler.authenticate()
+handler = CalendarHandler(
+    credentials_file='path/to/credentials.json',
+    token_file='path/to/token.json'
+)
 ```
 
-### 2. Calendar Operations
-
-#### List All Calendars
+#### `authenticate() -> bool`
+Authenticate with Google Calendar API using OAuth 2.0.
 ```python
-# Get all calendars
+if handler.authenticate():
+    print("Authentication successful")
+```
+
+### 2. Calendar Management
+
+#### `get_calendars() -> List[Dict]`
+Get all accessible calendars.
+```python
 calendars = handler.get_calendars()
-
-# Print calendar details
 for calendar in calendars:
-    print(f"Calendar: {calendar['summary']}")
-    print(f"ID: {calendar['id']}")
+    print(f"Calendar: {calendar['summary']} (ID: {calendar['id']})")
 ```
 
-#### Event Management
-
+#### `set_default_calendar(calendar_id: str) -> bool`
+Set the default calendar for operations.
 ```python
-# Add new event
-event = handler.add_event(
+success = handler.set_default_calendar("primary")
+```
+
+### 3. Event Management
+
+#### `add_event()`
+```python
+def add_event(
+    title: str,
+    start_time: str,
+    duration_minutes: int = 60,
+    description: str = "",
+    location: str = "",
+    attendees: List[str] = None,
+    calendar_id: str = None,
+    all_day: bool = False,
+    reminders: Dict = None
+) -> Optional[str]
+```
+Creates a new event in the calendar.
+
+Example:
+```python
+event_id = handler.add_event(
     title="Team Meeting",
-    start_time="2024-01-20T14:00:00",
+    start_time="2024-01-20T10:00:00.000Z",
     duration_minutes=60,
     description="Weekly team sync",
-    attendees=["team@example.com"],
-    location="Conference Room A"
-)
-
-# Update event
-handler.update_event(
-    event_id="event_id_here",
-    title="Updated Team Meeting",
-    start_time="2024-01-21T15:00:00",
-    duration_minutes=90
-)
-
-# Delete event
-handler.delete_event(event_id="event_id_here")
-
-# Get events for a time range
-events = handler.get_events(
-    start_time="2024-01-20T00:00:00",
-    end_time="2024-01-21T00:00:00"
+    location="Conference Room A",
+    attendees=["team@company.com"]
 )
 ```
 
-#### Availability Checking
-
+#### `delete_event()`
 ```python
-# Check specific time slot
-is_available, conflicts = handler.check_availability(
-    start_time="2024-01-20T14:00:00",
-    end_time="2024-01-20T15:00:00"
-)
+def delete_event(
+    event_id: str,
+    calendar_id: str = None
+) -> bool
+```
+Delete an event from the calendar.
 
-# Find available slots
-available_slots = handler.find_available_slots(
+Example:
+```python
+success = handler.delete_event("event_id_here")
+```
+
+#### `update_event()`
+```python
+def update_event(
+    event_id: str,
+    title: str = None,
+    start_time: str = None,
+    end_time: str = None,
+    description: str = None,
+    location: str = None,
+    attendees: List[str] = None,
+    calendar_id: str = None
+) -> bool
+```
+Update an existing event.
+
+Example:
+```python
+success = handler.update_event(
+    event_id="event_id_here",
+    title="Updated Meeting",
+    description="Updated description"
+)
+```
+
+#### `get_event()`
+```python
+def get_event(
+    event_id: str,
+    calendar_id: str = None
+) -> Optional[Dict]
+```
+Get a specific event by ID.
+
+Example:
+```python
+event = handler.get_event("event_id_here")
+if event:
+    print(f"Event: {event['summary']}")
+```
+
+#### `get_events()`
+```python
+def get_events(
+    start_time: str = None,
+    end_time: str = None,
+    calendar_id: str = None,
+    max_results: int = 50
+) -> List[Dict]
+```
+Get events from a calendar within a time range.
+
+Example:
+```python
+events = handler.get_events(
+    start_time="2024-01-20T00:00:00.000Z",
+    end_time="2024-01-21T00:00:00.000Z"
+)
+```
+
+### 4. Availability Checking
+
+#### `check_availability()`
+```python
+def check_availability(
+    start_time: str,
+    end_time: str,
+    calendar_id: str = None
+) -> Tuple[bool, List[Dict]]
+```
+Check if a time slot is available (no conflicts).
+
+Example:
+```python
+is_available, conflicts = handler.check_availability(
+    start_time="2024-01-20T10:00:00.000Z",
+    end_time="2024-01-20T11:00:00.000Z"
+)
+```
+
+#### `find_available_slots()`
+```python
+def find_available_slots(
+    date: str,
+    duration_minutes: int = 60,
+    start_hour: int = 9,
+    end_hour: int = 17,
+    calendar_id: str = None
+) -> List[Dict]
+```
+Find available time slots on a specific date.
+
+Example:
+```python
+slots = handler.find_available_slots(
     date="2024-01-20",
     duration_minutes=60,
     start_hour=9,
@@ -137,117 +190,173 @@ available_slots = handler.find_available_slots(
 )
 ```
 
-### 3. Error Handling
-
+#### `get_free_busy()`
 ```python
-try:
-    handler.add_event(...)
-except CalendarException as e:
-    print(f"Calendar operation failed: {e}")
-except AuthenticationError as e:
-    print(f"Authentication failed: {e}")
+def get_free_busy(
+    start_time: str,
+    end_time: str,
+    calendar_ids: List[str] = None
+) -> Dict
+```
+Get free/busy information for specified calendars.
+
+Example:
+```python
+free_busy = handler.get_free_busy(
+    start_time="2024-01-20T00:00:00.000Z",
+    end_time="2024-01-21T00:00:00.000Z",
+    calendar_ids=["primary", "work@company.com"]
+)
 ```
 
-## Security Best Practices
+## Important Notes
 
-1. **Credential Management**:
-   - Never commit `credentials.json` or `token.json` to version control
-   - Add these files to `.gitignore`
-   - Regularly rotate OAuth 2.0 credentials
+### Time Format
+All time parameters should be in RFC3339 format with UTC timezone:
+- Format: `YYYY-MM-DDThh:mm:ss.000Z`
+- Example: `2024-01-20T10:00:00.000Z`
+
+### Calendar IDs
+- Use `"primary"` for the user's primary calendar
+- For other calendars, use the calendar ID from `get_calendars()`
+- If `calendar_id` is not specified, the default calendar is used
+
+### Reminders
+Default reminders for new events:
+- Email: 24 hours before
+- Popup: 10 minutes before
+
+Custom reminders format:
+```python
+reminders = {
+    'useDefault': False,
+    'overrides': [
+        {'method': 'email', 'minutes': 60},  # 1 hour before
+        {'method': 'popup', 'minutes': 15}   # 15 minutes before
+    ]
+}
+```
+
+### Error Handling
+All methods include comprehensive error handling:
+- Authentication errors are logged with setup instructions
+- API errors are caught and logged with details
+- Invalid parameters are validated and reported
+- Network issues are handled gracefully
+
+## Example Usage
+
+### Basic Calendar Operations
+```python
+# Initialize and authenticate
+handler = CalendarHandler()
+handler.authenticate()
+
+# Get calendars
+calendars = handler.get_calendars()
+print(f"Found {len(calendars)} calendars")
+
+# Create event
+event_id = handler.add_event(
+    title="Team Meeting",
+    start_time="2024-01-20T10:00:00.000Z",
+    duration_minutes=60
+)
+
+# Check availability
+is_available, conflicts = handler.check_availability(
+    start_time="2024-01-20T10:00:00.000Z",
+    end_time="2024-01-20T11:00:00.000Z"
+)
+
+# Find available slots
+available_slots = handler.find_available_slots(
+    date="2024-01-20",
+    duration_minutes=60
+)
+
+# Delete event
+handler.delete_event(event_id)
+```
+
+### Advanced Usage
+```python
+# Create event with attendees and reminders
+event_id = handler.add_event(
+    title="Project Review",
+    start_time="2024-01-20T14:00:00.000Z",
+    duration_minutes=90,
+    description="Quarterly project review meeting",
+    location="Conference Room B",
+    attendees=["team@company.com", "manager@company.com"],
+    reminders={
+        'useDefault': False,
+        'overrides': [
+            {'method': 'email', 'minutes': 24 * 60},  # 1 day before
+            {'method': 'popup', 'minutes': 30}        # 30 minutes before
+        ]
+    }
+)
+
+# Update event
+handler.update_event(
+    event_id=event_id,
+    description="Updated: Quarterly project review with stakeholders",
+    attendees=["team@company.com", "manager@company.com", "stakeholder@company.com"]
+)
+
+# Get free/busy information
+free_busy = handler.get_free_busy(
+    start_time="2024-01-20T00:00:00.000Z",
+    end_time="2024-01-21T00:00:00.000Z",
+    calendar_ids=["primary", "team@company.com"]
+)
+```
+
+## Best Practices
+
+1. **Authentication**
+   - Store credentials securely
+   - Handle token refresh automatically
    - Use environment variables for sensitive data
 
-2. **Token Storage**:
-   - `token.json` is automatically created after first authentication
-   - Store it securely
-   - If compromised, delete it and re-authenticate
+2. **Event Management**
+   - Always use UTC timestamps
+   - Include timezone information
+   - Set appropriate reminders
+   - Handle recurring events carefully
 
-3. **Access Control**:
-   - Limit OAuth 2.0 scopes to only what's needed
-   - Regularly review and remove unused access
-   - Keep the authorized user list minimal
+3. **Availability Checking**
+   - Consider buffer time between meetings
+   - Check multiple calendars when necessary
+   - Handle all-day events appropriately
+
+4. **Error Handling**
+   - Implement proper error recovery
+   - Log important operations
+   - Validate input parameters
+   - Handle rate limiting
 
 ## Troubleshooting
 
-### Common Issues
+Common issues and solutions:
 
-1. **Authentication Failed**:
-   - Verify `credentials.json` is present and valid
-   - Check if token is expired (delete `token.json` and re-authenticate)
-   - Ensure correct OAuth 2.0 scopes are enabled
+1. **Authentication Failed**
+   - Verify credentials.json exists
+   - Check token expiration
+   - Ensure correct OAuth scopes
 
-2. **Calendar Operation Failed**:
-   - Check internet connectivity
-   - Verify calendar/event IDs exist
-   - Ensure user has required permissions
-   - Check for time zone issues in datetime strings
+2. **Event Creation Failed**
+   - Validate timestamp format
+   - Check calendar permissions
+   - Verify attendee email addresses
 
-3. **Rate Limiting**:
-   - Implement exponential backoff
-   - Cache frequently accessed data
-   - Batch operations when possible
+3. **Availability Issues**
+   - Confirm timezone handling
+   - Check for recurring events
+   - Verify calendar visibility
 
-### Debug Mode
-
-```python
-# Enable debug logging
-handler = CalendarHandler(debug=True)
-```
-
-## API Reference
-
-### CalendarHandler Class
-
-```python
-class CalendarHandler:
-    def __init__(self, credentials_path="credentials.json", token_path="token.json", debug=False):
-        """Initialize the calendar handler"""
-        
-    def authenticate(self):
-        """Authenticate with Google Calendar API"""
-        
-    def get_calendars(self):
-        """Get list of all calendars"""
-        
-    def add_event(self, title, start_time, duration_minutes, **kwargs):
-        """Add new calendar event"""
-        
-    def update_event(self, event_id, **kwargs):
-        """Update existing calendar event"""
-        
-    def delete_event(self, event_id):
-        """Delete calendar event"""
-        
-    def get_events(self, start_time, end_time):
-        """Get events in time range"""
-        
-    def check_availability(self, start_time, end_time):
-        """Check if time slot is available"""
-        
-    def find_available_slots(self, date, duration_minutes, start_hour=9, end_hour=17):
-        """Find available time slots"""
-```
-
-## Testing
-
-```bash
-# Run test suite
-python test.py
-
-# Run specific test
-python -m unittest test.TestCalendarHandler.test_add_event
-```
-
-## Contributing
-
-1. Fork the repository
-2. Create feature branch
-3. Write tests for new features
-4. Submit pull request
-
-## Support
-
-For issues and feature requests:
-- Create GitHub issue
-- Include detailed description
-- Attach relevant logs
-- Provide steps to reproduce 
+4. **Performance**
+   - Use appropriate time ranges
+   - Implement caching if needed
+   - Batch operations when possible 

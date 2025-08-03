@@ -1,0 +1,123 @@
+{
+  "calendars": [
+    {
+      "id": "c_classroomc0b81cae@group.calendar.google.com",
+      "summary": "IIIT CSE DIVISION B",
+      "description": "",
+      "timeZone": "UTC",
+      "primary": false,
+      "selected": true,
+      "accessRole": "reader"
+    },
+    {
+      "id": "classroom112127252196119255107@group.calendar.google.com",
+      "summary": "B.Tech-I CSE FCP CSE",
+      "description": "",
+      "timeZone": "UTC",
+      "primary": false,
+      "selected": true,
+      "accessRole": "reader"
+    },
+    {
+      "id": "en.indian#holiday@group.v.calendar.google.com",
+      "summary": "Holidays in India",
+      "description": "Holidays and Observances in India",
+      "timeZone": "Asia/Kolkata",
+      "primary": false,
+      "selected": true,
+      "accessRole": "reader"
+    },
+    {
+      "id": "classroom107075251879560900096@group.calendar.google.com",
+      "summary": "CSE SEM VII (INNOVATION AND ENTREPRENEURSHIP) CSE",
+      "description": "",
+      "timeZone": "UTC",
+      "primary": false,
+      "selected": true,
+      "accessRole": "reader"
+    },
+    {
+      "id": "quasarhrsh@gmail.com",
+      "summary": "quasarhrsh@gmail.com",
+      "description": "",
+      "timeZone": "Asia/Kolkata",
+      "primary": true,
+      "selected": true,
+      "accessRole": "owner"
+    }
+  ],
+  "upcoming_events": [
+    {
+      "kind": "calendar#event",
+      "etag": "\"3505977623290878\"",
+      "id": "5ee1jt0lp543905rnc3eco1jng_20250726T163000Z",
+      "status": "confirmed",
+      "htmlLink": "https://www.google.com/calendar/event?eid=NWVlMWp0MGxwNTQzOTA1cm5jM2VjbzFqbmdfMjAyNTA3MjZUMTYzMDAwWiBxdWFzYXJocnNoQG0",
+      "created": "2025-07-20T05:18:26.000Z",
+      "updated": "2025-07-20T05:20:11.645Z",
+      "summary": "Project Updates",
+      "creator": {
+        "email": "quasarhrsh@gmail.com",
+        "self": true
+      },
+      "organizer": {
+        "email": "quasarhrsh@gmail.com",
+        "self": true
+      },
+      "start": {
+        "dateTime": "2025-07-26T22:00:00+05:30",
+        "timeZone": "Asia/Kolkata"
+      },
+      "end": {
+        "dateTime": "2025-07-26T23:00:00+05:30",
+        "timeZone": "Asia/Kolkata"
+      },
+      "recurringEventId": "5ee1jt0lp543905rnc3eco1jng",
+      "originalStartTime": {
+        "dateTime": "2025-07-26T22:00:00+05:30",
+        "timeZone": "Asia/Kolkata"
+      },
+      "iCalUID": "5ee1jt0lp543905rnc3eco1jng@google.com",
+      "sequence": 0,
+      "attendees": [
+        {
+          "email": "nivelixir@gmail.com",
+          "responseStatus": "declined"
+        },
+        {
+          "email": "pratik.univs@gmail.com",
+          "responseStatus": "accepted"
+        },
+        {
+          "email": "quasarhrsh@gmail.com",
+          "organizer": true,
+          "self": true,
+          "responseStatus": "accepted"
+        }
+      ],
+      "hangoutLink": "https://meet.google.com/wmt-ixzx-npf",
+      "conferenceData": {
+        "entryPoints": [
+          {
+            "entryPointType": "video",
+            "uri": "https://meet.google.com/wmt-ixzx-npf",
+            "label": "meet.google.com/wmt-ixzx-npf"
+          }
+        ],
+        "conferenceSolution": {
+          "key": {
+            "type": "hangoutsMeet"
+          },
+          "name": "Google Meet",
+          "iconUri": "https://fonts.gstatic.com/s/i/productlogos/meet_2020q4/v6/web-512dp/logo_meet_2020q4_color_2x_web_512dp.png"
+        },
+        "conferenceId": "wmt-ixzx-npf"
+      },
+      "reminders": {
+        "useDefault": true
+      },
+      "eventType": "default"
+    }
+  ],
+  "last_updated": "2025-07-21T23:08:06.371334"
+}

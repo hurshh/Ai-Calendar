@@ -549,9 +549,9 @@ class CalendarHandler:
             calendar_id = self.default_calendar_id
         
         try:
-            # Create time range for the entire day
-            start_of_day = f"{date}T00:00:00"
-            end_of_day = f"{date}T23:59:59"
+            # Create time range for the entire day in UTC
+            start_of_day = f"{date}T00:00:00.000Z"
+            end_of_day = f"{date}T23:59:59.999Z"
             
             # Get all events for the day
             events = self.get_events(start_of_day, end_of_day, calendar_id)
@@ -563,36 +563,36 @@ class CalendarHandler:
                 event_end = event.get('end', {}).get('dateTime') or event.get('end', {}).get('date')
                 
                 if 'T' in event_start:  # Skip all-day events
-                    busy_ranges.append((event_start, event_end))
+                    # Convert to UTC
+                    start_dt = datetime.fromisoformat(event_start.replace('Z', '+00:00'))
+                    end_dt = datetime.fromisoformat(event_end.replace('Z', '+00:00'))
+                    busy_ranges.append((start_dt, end_dt))
             
             # Sort busy ranges by start time
             busy_ranges.sort(key=lambda x: x[0])
             
             # Find available slots
             available_slots = []
-            current_time = datetime.fromisoformat(f"{date}T{start_hour:02d}:00:00")
-            end_time = datetime.fromisoformat(f"{date}T{end_hour:02d}:00:00")
+            
+            # Create timezone aware datetime objects
+            tz = pytz.UTC
+            current_time = datetime.strptime(f"{date}T{start_hour:02d}:00:00.000Z", "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=tz)
+            end_time = datetime.strptime(f"{date}T{end_hour:02d}:00:00.000Z", "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=tz)
             
             while current_time + timedelta(minutes=duration_minutes) <= end_time:
-                slot_start = current_time.isoformat()
-                slot_end = (current_time + timedelta(minutes=duration_minutes)).isoformat()
-                
                 # Check if this slot conflicts with any busy time
                 slot_available = True
+                slot_end_time = current_time + timedelta(minutes=duration_minutes)
+                
                 for busy_start, busy_end in busy_ranges:
-                    busy_start_dt = datetime.fromisoformat(busy_start.replace('Z', '+00:00'))
-                    busy_end_dt = datetime.fromisoformat(busy_end.replace('Z', '+00:00'))
-                    slot_start_dt = datetime.fromisoformat(slot_start.replace('Z', '+00:00'))
-                    slot_end_dt = datetime.fromisoformat(slot_end.replace('Z', '+00:00'))
-                    
-                    if (busy_start_dt < slot_end_dt and busy_end_dt > slot_start_dt):
+                    if (busy_start < slot_end_time and busy_end > current_time):
                         slot_available = False
                         break
                 
                 if slot_available:
                     available_slots.append({
-                        'start_time': slot_start,
-                        'end_time': slot_end,
+                        'start_time': current_time.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+                        'end_time': slot_end_time.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
                         'duration_minutes': duration_minutes
                     })
                 
