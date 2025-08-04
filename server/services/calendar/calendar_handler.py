@@ -50,9 +50,12 @@ class CalendarHandler:
         # Google Calendar API scopes - Full access for event management
         self.SCOPES = GOOGLE_CALENDAR_SCOPES
         
+        # Get the server root directory
+        server_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+        
         # File paths
-        self.credentials_file = os.path.join('config', credentials_file)
-        self.token_file = os.path.join('config', token_file)
+        self.credentials_file = os.path.join(server_root, 'config', credentials_file)
+        self.token_file = os.path.join(server_root, 'config', token_file)
         
         # Service instance
         self.service = None

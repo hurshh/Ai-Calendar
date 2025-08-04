@@ -2,7 +2,7 @@
 GPT-powered calendar chatbot service
 """
 
-from services.calendar_handler import CalendarHandler
+from services.calendar.calendar_handler import CalendarHandler
 from datetime import datetime, timedelta
 import pytz
 import re

@@ -11,8 +11,6 @@ def check_requirements():
         import flask_cors
         import openai
         import dotenv
-        from calendar_handler import CalendarHandler
-        from calendar_chatbot_gpt import CalendarGPTBot
         print("✓ All dependencies are installed")
         return True
     except ImportError as e:
@@ -23,17 +21,17 @@ def check_requirements():
 
 def check_env_file():
     """Check if .env file exists and has required variables"""
-    env_path = Path('.env')
+    env_path = Path('./config/.env')  # Look for .env in config directory relative to server
     if not env_path.exists():
-        print("✗ .env file not found")
-        print("\nPlease create a .env file with:")
+        print("✗ .env file not found in config directory")
+        print("\nPlease create a .env file in config/ with:")
         print("OPENAI_API_KEY=your-openai-api-key-here")
         print("\nGet your API key from: https://platform.openai.com/api-keys")
         return False
     
     # Load and check environment variables
     from dotenv import load_dotenv
-    load_dotenv()
+    load_dotenv(env_path)
     
     api_key = os.getenv('OPENAI_API_KEY')
     if not api_key:
@@ -47,11 +45,11 @@ def check_env_file():
 
 def check_google_credentials():
     """Check if Google Calendar credentials are set up"""
-    creds_file = Path('credentials.json')
+    creds_file = Path('./config/credentials.json')  # Look for credentials in config directory
     if not creds_file.exists():
         print("⚠ Google Calendar credentials.json not found")
         print("Calendar functionality may not work properly")
-        print("See CHATBOT_SETUP.md for Google Calendar setup instructions")
+        print("See docs/CHATBOT_SETUP.md for Google Calendar setup instructions")
         return False
     
     print("✓ Google Calendar credentials found")
@@ -60,11 +58,6 @@ def check_google_credentials():
 def main():
     print("🗓️ AI Calendar Web App Setup Check")
     print("=" * 50)
-    
-    # Check current directory
-    if not Path('web_app.py').exists():
-        print("Please run this script from the server directory")
-        sys.exit(1)
     
     # Check all requirements
     all_checks_passed = True
@@ -88,9 +81,13 @@ def main():
     print("\nPress Ctrl+C to stop the server")
     print("=" * 50)
     
+    # Add server directory to Python path
+    server_dir = str(Path(__file__).parent.parent.absolute())
+    sys.path.insert(0, server_dir)
+    
     # Import and run the web app
     try:
-        from web_app import app
+        from api.web_app import app
         app.run(debug=True, host='0.0.0.0', port=5001)
     except Exception as e:
         print(f"\n❌ Error starting web app: {e}")

@@ -4,8 +4,8 @@ Web application API endpoints
 
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
-from services.calendar_chatbot_gpt import CalendarGPTBot
-from services.calendar_handler import CalendarHandler
+from services.chatbot.calendar_chatbot_gpt import CalendarGPTBot
+from services.calendar.calendar_handler import CalendarHandler
 from datetime import datetime, timedelta
 import pytz
 import os
@@ -19,7 +19,7 @@ from config.settings import (
 )
 
 # Initialize Flask app with correct template directory
-app = Flask(__name__, template_folder='../templates')
+app = Flask(__name__, static_folder='../static')
 CORS(app)
 
 # Initialize the chatbot and calendar handler
@@ -44,7 +44,7 @@ except Exception as e:
 @app.route('/')
 def index():
     """Serve the main calendar interface"""
-    return render_template('index.html')
+    return app.send_static_file('index.html')
 
 @app.route('/api/events')
 def get_events():
