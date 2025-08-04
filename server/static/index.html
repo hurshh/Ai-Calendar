@@ -290,7 +290,7 @@
 </head>
 <body>
     <div class="header">
-        <h1>🗓️ AI Calendar Assistant</h1>
+        <h1>AI Calendar Assistant</h1>
         <p>Manage your calendar events with intelligent chat assistance</p>
     </div>
 
@@ -459,7 +459,7 @@
                     addMessage(data.response, 'bot');
                     
                     // Refresh events if the response indicates success
-                    if (data.response.includes('✓ Successfully') || 
+                    if (data.response.includes('[SUCCESS]') || 
                         data.response.includes('scheduled') ||
                         data.response.includes('created') ||
                         data.response.includes('updated') ||

@@ -142,7 +142,7 @@ class CalendarGPTBot:
             )
             
             if event_id:
-                return f"✓ Successfully scheduled: {params['title']}\n" \
+                return f"[SUCCESS] Successfully scheduled: {params['title']}\n" \
                        f"Start: {self._format_event_time(params['start_time'])}\n" \
                        f"Duration: {params['duration_minutes']} minutes\n" \
                        f"Event ID: {event_id}"
@@ -293,7 +293,7 @@ class CalendarGPTBot:
             )
             
             if success:
-                return "✓ Event updated successfully"
+                return "[SUCCESS] Event updated successfully"
             else:
                 return "Failed to update event. Please check the event ID and try again."
             
@@ -306,7 +306,7 @@ class CalendarGPTBot:
             success = self.handler.delete_event(params['event_id'])
             
             if success:
-                return "✓ Event deleted successfully"
+                return "[SUCCESS] Event deleted successfully"
             else:
                 return "Failed to delete event. Please check the event ID and try again."
             
@@ -333,7 +333,7 @@ class CalendarGPTBot:
                     deleted_count += 1
             
             if deleted_count > 0:
-                return f"✓ Successfully deleted {deleted_count} event{'s' if deleted_count > 1 else ''}"
+                return f"[SUCCESS] Successfully deleted {deleted_count} event{'s' if deleted_count > 1 else ''}"
             else:
                 return "Failed to delete events. Please try again."
             

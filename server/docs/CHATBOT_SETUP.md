@@ -1,182 +1,83 @@
-# Calendar GPT Chatbot Setup Guide
+# Google Calendar Setup Guide
+
+This guide will help you set up Google Calendar integration for the AI Calendar Assistant.
 
 ## Prerequisites
 
-1. **Python Environment**
-   - Python 3.7 or higher
-   - Virtual environment (venv)
-
-2. **API Keys**
-   - OpenAI API key (for GPT integration)
-   - Google Calendar API credentials
+1. Google Cloud Account
+2. Python 3.7 or higher
+3. OpenAI API key
 
 ## Setup Steps
 
-### 1. Virtual Environment
+### 1. Create a Google Cloud Project
 
-```bash
-# Navigate to server directory
-cd server
+1. Go to [Google Cloud Console](https://console.cloud.google.com/)
+2. Create a new project or select an existing one
+3. Note your Project ID
 
-# Create virtual environment
-python3 -m venv venv
+### 2. Enable Google Calendar API
 
-# Activate virtual environment
-# On macOS/Linux:
-source venv/bin/activate
-# On Windows:
-venv\Scripts\activate
-```
+1. Go to [API Library](https://console.cloud.google.com/apis/library)
+2. Search for "Google Calendar API"
+3. Click "Enable"
 
-### 2. Install Dependencies
+### 3. Configure OAuth Consent Screen
 
-```bash
-# Make sure your virtual environment is activated
-pip install --upgrade pip
-pip install -r requirements.txt
-```
+1. Go to [OAuth consent screen](https://console.cloud.google.com/apis/credentials/consent)
+2. Select "External" user type
+3. Fill in required information:
+   - App name: "AI Calendar Assistant"
+   - User support email
+   - Developer contact information
+4. Add scopes:
+   - `./auth/calendar`
+   - `./auth/calendar.events`
+   - `./auth/calendar.readonly`
+5. Add test users (your Google account email)
 
-### 3. OpenAI API Setup
+### 4. Create OAuth 2.0 Credentials
 
-1. Get your API key:
-   - Go to [OpenAI API Keys](https://platform.openai.com/api-keys)
-   - Create a new API key
-   - Copy the key
+1. Go to [Credentials](https://console.cloud.google.com/apis/credentials)
+2. Click "Create Credentials" > "OAuth client ID"
+3. Select "Desktop app"
+4. Name: "AI Calendar Assistant"
+5. Download the credentials file
+6. Rename to `credentials.json`
+7. Place in `config/` directory
 
-2. Set up billing (required):
-   - Go to [OpenAI Billing](https://platform.openai.com/account/billing)
-   - Add a payment method
-   - Set usage limits (optional)
+### 5. First Run Authentication
 
-3. Create `.env` file in the server directory:
-   ```
-   OPENAI_API_KEY=your-api-key-here
-   ```
-
-### 4. Google Calendar Setup
-
-1. Get Google Calendar credentials:
-   - Go to [Google Cloud Console](https://console.cloud.google.com)
-   - Create a new project or select existing one
-   - Enable Google Calendar API
-   - Create OAuth 2.0 credentials (Desktop application)
-   - Download credentials and save as `credentials.json` in the server directory
-
-2. First-time authentication:
-   - Run the chatbot
-   - Follow OAuth flow in browser
-   - Grant necessary permissions
-   - Token will be saved as `token.json`
-
-## Running the Chatbot
-
-1. Make sure you're in the server directory with activated virtual environment
-2. Run the chatbot:
-   ```bash
-   python calendar_chatbot_gpt.py
-   ```
-
-## Available Commands
-
-### 1. Schedule Events
-```
-"Schedule a team meeting tomorrow at 2 PM for 1 hour"
-"Create a dentist appointment on 2024-01-25 at 10:00 for 30 minutes"
-```
-
-### 2. Show Events
-```
-"What's on my calendar today?"
-"Show me my meetings for this week"
-"What events do I have tomorrow?"
-```
-
-### 3. Find Available Slots
-```
-"When am I free tomorrow?"
-"Find me a 30-minute slot for tomorrow"
-"What time slots are available next Monday?"
-```
-
-### 4. Update Events
-```
-"Update event abc123 title to 'Updated Meeting'"
-"Change the time of event xyz789 to tomorrow at 3 PM"
-```
-
-### 5. Delete Events
-```
-"Delete event abc123"
-"Cancel the meeting with ID xyz789"
-```
+1. Run the application
+2. Browser will open for Google authentication
+3. Select your Google account
+4. Grant permissions
+5. Token will be saved as `token.json`
 
 ## Troubleshooting
 
 ### Common Issues
 
-1. **OpenAI API Key Issues**
-   - Error: "OpenAI API key not found"
-   - Solution: Check .env file and key validity
+1. "Invalid client" error:
+   - Check credentials.json is correctly placed
+   - Verify OAuth consent screen is configured
 
-2. **Google Calendar Authentication**
-   - Error: "credentials.json not found"
-   - Solution: Download and place credentials file correctly
+2. "Access denied" error:
+   - Ensure your email is added as a test user
+   - Check required scopes are enabled
 
-3. **Token Expiration**
-   - Error: "Token has expired"
-   - Solution: Delete token.json and re-authenticate
-
-4. **Virtual Environment**
-   - Error: "Module not found"
-   - Solution: Ensure venv is activated and dependencies installed
-
-### Debug Mode
-
-For detailed error messages, you can enable debug mode:
-```python
-DEBUG=True python calendar_chatbot_gpt.py
-```
+3. Token refresh issues:
+   - Delete token.json and re-authenticate
+   - Check your internet connection
 
 ## Security Notes
 
-1. **API Keys**
-   - Never commit API keys to version control
-   - Keep .env file secure
-   - Rotate keys periodically
+1. Keep credentials.json secure
+2. Never commit credentials to version control
+3. Use environment variables for sensitive data
+4. Regularly rotate OAuth client secrets
 
-2. **Google Calendar Access**
-   - Review and limit OAuth scopes
-   - Regularly check authorized applications
-   - Use separate test calendar for development
+## Additional Resources
 
-3. **Data Storage**
-   - token.json contains sensitive data
-   - Keep credentials.json secure
-   - Add both to .gitignore
-
-## Best Practices
-
-1. **Command Format**
-   - Be specific with times and dates
-   - Use clear event titles
-   - Specify duration when scheduling
-
-2. **Calendar Management**
-   - Check for conflicts before scheduling
-   - Use descriptive event titles
-   - Add location and description when relevant
-
-3. **Error Handling**
-   - Check error messages
-   - Verify input format
-   - Use help command when needed
-
-## Support
-
-For issues and questions:
-1. Check troubleshooting section
-2. Review error messages
-3. Verify configuration
-4. Check API documentation:
-   - [OpenAI API](https://platform.openai.com/docs)
-   - [Google Calendar API](https://developers.google.com/calendar) 
+- [Google Calendar API Documentation](https://developers.google.com/calendar/api/guides/overview)
+- [OAuth 2.0 for Desktop Apps](https://developers.google.com/identity/protocols/oauth2/native-app) 
