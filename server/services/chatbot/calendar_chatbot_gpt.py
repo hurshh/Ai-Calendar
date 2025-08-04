@@ -1,16 +1,15 @@
-#!/usr/bin/env python3
+"""
+GPT-powered calendar chatbot service
+"""
 
-from calendar_handler import CalendarHandler
+from services.calendar_handler import CalendarHandler
 from datetime import datetime, timedelta
 import pytz
 import re
 import os
 from typing import Tuple, List, Dict, Optional
 from openai import OpenAI
-from dotenv import load_dotenv
-
-# Load environment variables from .env file
-load_dotenv()
+from config.settings import OPENAI_MODEL
 
 class CalendarGPTBot:
     def __init__(self, api_key: str):

@@ -27,13 +27,19 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google.auth.transport.requests import Request
+from config.settings import (
+    GOOGLE_CREDENTIALS_FILE,
+    GOOGLE_TOKEN_FILE,
+    GOOGLE_CALENDAR_SCOPES,
+    DEFAULT_CALENDAR_ID
+)
 
 class CalendarHandler:
     """
     Comprehensive Google Calendar management handler
     """
     
-    def __init__(self, credentials_file: str = 'credentials.json', token_file: str = 'token.json'):
+    def __init__(self, credentials_file: str = GOOGLE_CREDENTIALS_FILE, token_file: str = GOOGLE_TOKEN_FILE):
         """
         Initialize the Calendar Handler
         
@@ -42,20 +48,17 @@ class CalendarHandler:
             token_file: Path to store OAuth tokens
         """
         # Google Calendar API scopes - Full access for event management
-        self.SCOPES = [
-            'https://www.googleapis.com/auth/calendar',
-            'https://www.googleapis.com/auth/calendar.events'
-        ]
+        self.SCOPES = GOOGLE_CALENDAR_SCOPES
         
         # File paths
-        self.credentials_file = credentials_file
-        self.token_file = token_file
+        self.credentials_file = os.path.join('config', credentials_file)
+        self.token_file = os.path.join('config', token_file)
         
         # Service instance
         self.service = None
         
         # Default calendar ID
-        self.default_calendar_id = 'primary'
+        self.default_calendar_id = DEFAULT_CALENDAR_ID
         
         # Default timezone
         self.timezone = 'UTC'

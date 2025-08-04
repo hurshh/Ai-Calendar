@@ -1,28 +1,34 @@
-#!/usr/bin/env python3
+"""
+Web application API endpoints
+"""
 
 from flask import Flask, render_template, request, jsonify
 from flask_cors import CORS
-from calendar_chatbot_gpt import CalendarGPTBot
-from calendar_handler import CalendarHandler
+from services.calendar_chatbot_gpt import CalendarGPTBot
+from services.calendar_handler import CalendarHandler
 from datetime import datetime, timedelta
 import pytz
 import os
-from dotenv import load_dotenv
+from config.settings import (
+    OPENAI_API_KEY,
+    DEBUG,
+    HOST,
+    PORT,
+    GOOGLE_CREDENTIALS_FILE,
+    GOOGLE_TOKEN_FILE
+)
 
-# Load environment variables
-load_dotenv()
-
-app = Flask(__name__)
+# Initialize Flask app with correct template directory
+app = Flask(__name__, template_folder='../templates')
 CORS(app)
 
 # Initialize the chatbot and calendar handler
-api_key = os.getenv('OPENAI_API_KEY')
-if not api_key:
+if not OPENAI_API_KEY:
     print("Warning: OPENAI_API_KEY not found. Chat functionality will be limited.")
     chatbot = None
 else:
     try:
-        chatbot = CalendarGPTBot(api_key)
+        chatbot = CalendarGPTBot(OPENAI_API_KEY)
     except Exception as e:
         print(f"Error initializing chatbot: {e}")
         chatbot = None
